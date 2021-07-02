@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
         marginTop: 100,
     },
 
+
     city: {
         color: "#fff",
         fontSize: 32,
