@@ -1,18 +1,50 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState, useEffect } from "react";
-import { StyleSheet, ImageBackground, ScrollView, Text, View, TextInput, TouchableOpacity, Button } from "react-native";
-import favorites from "./favorites.json";
+import React, { useState, useCallback } from "react";
+import {
+    StyleSheet,
+    ImageBackground,
+    ScrollView,
+    Text,
+    View,
+    TextInput,
+    TouchableOpacity,
+    RefreshControl
+} from "react-native";
 
 
-export default function Weather() {
+
+export default function Weather({ navigation }) {
     const [weatherData, setWeatherData] = useState([{}]);
-    const apiKey = "<API>";
+    const apiKey = "API KEY";
     const [city, setCity] = useState("");
     const [unit, setUnit] = useState(true);
 
+    let json = require('./recents.json');
+
     const dateBuilder = (d) => {
-        let months = ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let months = [
+            "Jan",
+            "Feb",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+        ];
+        let days = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+        ];
 
         let day = days[d.getDay()];
         let date = d.getDate();
@@ -22,31 +54,56 @@ export default function Weather() {
         return `${day} ${month} ${date}, ${year}`;
     };
 
+    function fetchAPI() {
+        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&APPID=${apiKey}`).then(
+            response => response.json()
+        ).then(
+            data => {
+                setWeatherData(data);
+                setCity('')
+                // This conditional will add the location to the json array if it exists
+                if (data.cod !== '404' && data.main !== 'undefined' && city !== '') {
+                    json['recents'].push({ city: data.name })
+                }
+            }
+        )
+    }
+    const [refreshing, setRefreshing] = useState(false);
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        setWeatherData([{}])
+    }
+
+
+
     return (
+
         <ImageBackground source={(typeof weatherData.main != 'undefined') ? (weatherData.main.temp > 50) ? require('../assets/warm-bg.jpg') : require('../assets/cold-bg.jpg') : require('../assets/cold-bg.jpg')} style={{ width: '100%', height: '105%' }}>
-            <ScrollView style={styles.container}>
-                <View>
-                    <View style={styles.main}>
-                        <TextInput
-                            placeholder='Enter City...'
-                            style={styles.cityInput}
-                            onChangeText={text => setCity(text)}
-                            value={city}
-                            onSubmitEditing={() => {
-                                fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&APPID=${apiKey}`).then(
-                                    response => response.json()
-                                ).then(
-                                    data => {
-                                        setWeatherData(data);
-                                        setCity('')
-                                    }
-                                )
-                            }}
-                        />
+            <View style={styles.container}>
+
+                <View style={styles.main}>
+                    <TextInput
+                        placeholder='Enter City...'
+                        style={styles.cityInput}
+                        onChangeText={text => setCity(text)}
+                        value={city}
+                        onSubmitEditing={() => fetchAPI()}
+                    />
 
 
+                    <ScrollView
+                        content={styles.scrollView}
+                        refreshControl={
+                            <RefreshControl
+                                refresh={refreshing}
+                                onRefresh={onRefresh}
+                            />
+                        }
+                    >
 
-                        {(typeof weatherData.main != 'undefined') ? (
+                        {(typeof weatherData.main !== 'undefined') ? (
+
                             <View style={styles.weatherInfo}>
                                 <Text style={styles.city}>{weatherData.name}, {weatherData.sys.country}</Text>
                                 <Text style={styles.date}>{dateBuilder(new Date())}</Text>
@@ -55,50 +112,44 @@ export default function Weather() {
                                 </TouchableOpacity>
                                 {unit ? <Text style={styles.minMax}>Min: {Math.round(weatherData.main.temp_min)}ºF / Max: {Math.round(weatherData.main.temp_max)}ºF</Text> : <Text style={styles.minMax}>Min: {Math.round((weatherData.main.temp_min - 32) * 5 / 9)}ºC / Max: {Math.round((weatherData.main.temp_max - 32) * 5 / 9)}ºC</Text>}
                                 <Text style={styles.weather}>{weatherData.weather[0].main}</Text>
-
+                                <TouchableOpacity style={styles.goToHome} onPress={() => setWeatherData([{}])}>
+                                    <Text style={styles.homeText}>Go To Home</Text>
+                                </TouchableOpacity>
                             </View>
-                        ) : (<>
+                        ) : (
                             <View style={styles.weatherInfo}>
                                 <Text style={styles.city}>Weather Wizard</Text>
                                 <Text style={styles.date}>{dateBuilder(new Date())}</Text>
                             </View>
-                        </>)}
+                        )
+                        }
 
-                        <Button
-                            title="Add to favorites"
-                            onPress={() => console.log("hello")}
-                        />
+
 
                         {(weatherData.cod === '404') ? (
                             <Text style={{ marginTop: 50, color: '#fff', fontSize: 20, textAlign: 'center', marginRight: 20, marginLeft: 20 }}>No city found. Maybe try just putting the city name?</Text>
                         ) : (<></>)}
-
+                        <TouchableOpacity style={styles.goToRecents} onPress={() => navigation.navigate('Recents')}>
+                            <Text style={styles.recentsText}>View Recent Searches</Text>
+                        </TouchableOpacity>
                         <View style={styles.credit}>
                             <Text style={styles.myName}>Developed by <Text style={styles.fullName}>Arpan Neupane</Text></Text>
                         </View>
-
-
-
-                    </View>
-
-
+                    </ScrollView>
                 </View>
-            </ScrollView>
-        </ImageBackground>
+            </View>
+        </ImageBackground >
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
     },
 
     main: {
         marginTop: 66,
         width: "100%",
-
         flex: 1,
         alignItems: "center",
     },
@@ -119,7 +170,6 @@ const styles = StyleSheet.create({
     weatherInfo: {
         marginTop: 100,
     },
-
 
     city: {
         color: "#fff",
@@ -165,7 +215,13 @@ const styles = StyleSheet.create({
 
     credit: {
         textAlign: "center",
-        marginTop: 50,
+        marginRight: 'auto',
+        marginLeft: 'auto',
+        marginTop: 20,
+        marginBottom: 10,
+        flex: 1,
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
 
     myName: {
@@ -186,5 +242,33 @@ const styles = StyleSheet.create({
         marginLeft: 30,
         marginBottom: 25,
     },
-});
 
+
+    goToRecents: {
+        paddingTop: 15,
+        marginRight: 'auto',
+        marginLeft: 'auto',
+        marginTop: 10,
+        marginBottom: 10,
+        flex: 1,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+
+    recentsText: {
+        fontSize: 22,
+        color: '#fff',
+        textAlign: 'center'
+    },
+
+    goToHome: {
+        paddingTop: 15,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    homeText: {
+        fontSize: 22,
+        color: '#fff',
+        textAlign: 'center'
+    },
+});
