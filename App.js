@@ -1,22 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import Weather from './components/Weather'
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import Recents from './components/Recents';
+import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Favorites from './components/Favorites';
 
-const Tab = createMaterialBottomTabNavigator();
+const Stack = createStackNavigator();
 
 export default function App() {
     return (
         <NavigationContainer>
-            <Tab.Navigator initialRouteName="Home" activeColor="#45b6fe" inactiveColor="#bebdb8" barStyle={{ backgroundColor: '#fff' }}>
-                <Tab.Screen name="Home" component={Weather} options={{tabBarLabel: 'Home', tabBarIcon: ({ color }) => (<MaterialCommunityIcons name="weather-cloudy" color={color} size={20}/>),}}/>
-                <Tab.Screen name="Favorites" component={Favorites} options={{tabBarLabel: 'Favorites', tabBarIcon: ({ color }) => (<MaterialCommunityIcons name="thumb-up-outline" color={color} size={20}/>),}}/>
-            </Tab.Navigator>
-        </NavigationContainer>
-        
+            <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: true, headerTransparent: true }}>
+                <Stack.Screen name='Home' component={Weather} options={{ headerTintColor: "#fff" }} />
+                <Stack.Screen name='Recents' component={Recents} options={{ headerTintColor: "#fff" }} />
+            </Stack.Navigator >
+        </NavigationContainer >
+
     );
 }
 
