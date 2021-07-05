@@ -148,16 +148,15 @@ const styles = StyleSheet.create({
     },
 
     main: {
-        marginTop: 66,
+        marginTop: 110,
         width: "100%",
-        flex: 1,
-        alignItems: "center",
+        flex: 1
     },
 
     cityInput: {
-        width: "85%",
-        marginRight: "10%",
-        marginLeft: "10%",
+        width: "90%",
+        marginLeft: '5%',
+        marginRight: '5%',
         height: 54,
         padding: 15,
         backgroundColor: "rgba(255,255,255,0.8)",
@@ -168,7 +167,7 @@ const styles = StyleSheet.create({
     },
 
     weatherInfo: {
-        marginTop: 100,
+        marginTop: 90,
     },
 
     city: {
@@ -271,4 +270,8 @@ const styles = StyleSheet.create({
         color: '#fff',
         textAlign: 'center'
     },
+
+    scrollView: {
+        width: '100%'
+    }
 });
