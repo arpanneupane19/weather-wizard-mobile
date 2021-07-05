@@ -11,7 +11,6 @@ import {
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
-
 let json = require('./recents.json')
 
 export default function Recents({ navigation }) {
@@ -52,7 +51,7 @@ export default function Recents({ navigation }) {
         >
 
             <View style={styles.main}>
-                <Text style={styles.header}>Recents</Text>
+                {/* <Text style={styles.header}>Recents</Text> */}
                 <ScrollView
                     content={styles.scrollView}
                     refreshControl={
@@ -72,11 +71,6 @@ export default function Recents({ navigation }) {
                             </TouchableOpacity>
                         </View>
                     ))}
-                    <View style={styles.goBack}>
-                        <TouchableOpacity onPress={() => navigation.goBack()}>
-                            <Text style={styles.city}>Back To Weather</Text>
-                        </TouchableOpacity>
-                    </View>
                 </ScrollView>
 
 
@@ -89,24 +83,10 @@ export default function Recents({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-
     main: {
-        marginTop: 66,
+        marginTop: 120,
         flex: 1,
         width: '100%'
-    },
-
-    header: {
-        color: '#fff',
-        fontSize: 32,
-        fontWeight: '300',
-        textAlign: 'center',
-        marginBottom: 40
     },
 
     recent: {
