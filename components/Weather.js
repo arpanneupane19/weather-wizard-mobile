@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     },
 
     weatherInfo: {
-        marginTop: 90,
+        marginTop: 60,
     },
 
     city: {
@@ -237,9 +237,8 @@ const styles = StyleSheet.create({
     minMax: {
         color: "#fff",
         fontSize: 28,
-        marginRight: 30,
-        marginLeft: 30,
         marginBottom: 25,
+        textAlign: "center"
     },
 
 
