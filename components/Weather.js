@@ -10,7 +10,8 @@ import {
     TouchableOpacity,
     RefreshControl
 } from "react-native";
-
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import SafeAreaView from 'react-native-safe-area-view';
 
 
 export default function Weather({ navigation }) {
@@ -73,16 +74,26 @@ export default function Weather({ navigation }) {
     const onRefresh = () => {
         setRefreshing(true);
         setWeatherData([{}])
+        setCity('')
+        setUnit()
     }
 
 
 
     return (
+        <SafeAreaView>
+            <StatusBar barStyle='light-content' />
+            <ImageBackground ImageBackground ImageBackground source={(typeof weatherData.main != 'undefined') ? (weatherData.main.temp > 50) ? require('../assets/warm-bg.jpg') : require('../assets/cold-bg.jpg') : require('../assets/cold-bg.jpg')
+            } style={{ width: '100%', height: '105%' }}>
 
-        <ImageBackground source={(typeof weatherData.main != 'undefined') ? (weatherData.main.temp > 50) ? require('../assets/warm-bg.jpg') : require('../assets/cold-bg.jpg') : require('../assets/cold-bg.jpg')} style={{ width: '100%', height: '105%' }}>
-            <View style={styles.container}>
-
-                <View style={styles.main}>
+                <ScrollView style={styles.main}
+                    content={styles.scrollView}
+                    refreshControl={
+                        <RefreshControl
+                            refresh={refreshing}
+                            onRefresh={onRefresh}
+                        />
+                    }>
                     <TextInput
                         placeholder='Enter City...'
                         style={styles.cityInput}
@@ -92,65 +103,51 @@ export default function Weather({ navigation }) {
                     />
 
 
-                    <ScrollView
-                        content={styles.scrollView}
-                        refreshControl={
-                            <RefreshControl
-                                refresh={refreshing}
-                                onRefresh={onRefresh}
-                            />
-                        }
-                    >
+                    {(typeof weatherData.main !== 'undefined') ? (
 
-                        {(typeof weatherData.main !== 'undefined') ? (
-
-                            <View style={styles.weatherInfo}>
-                                <Text style={styles.city}>{weatherData.name}, {weatherData.sys.country}</Text>
-                                <Text style={styles.date}>{dateBuilder(new Date())}</Text>
-                                <TouchableOpacity style={styles.weatherBox} onPress={() => unit ? setUnit(false) : setUnit(true)}>
-                                    {unit ? <Text style={styles.temp}>{Math.round(weatherData.main.temp)}ºF</Text> : <Text style={styles.temp}>{Math.round((weatherData.main.temp - 32) * 5 / 9)}ºC</Text>}
-                                </TouchableOpacity>
-                                {unit ? <Text style={styles.minMax}>Min: {Math.round(weatherData.main.temp_min)}ºF / Max: {Math.round(weatherData.main.temp_max)}ºF</Text> : <Text style={styles.minMax}>Min: {Math.round((weatherData.main.temp_min - 32) * 5 / 9)}ºC / Max: {Math.round((weatherData.main.temp_max - 32) * 5 / 9)}ºC</Text>}
-                                <Text style={styles.weather}>{weatherData.weather[0].main}</Text>
-                                <TouchableOpacity style={styles.goToHome} onPress={() => setWeatherData([{}])}>
-                                    <Text style={styles.homeText}>Go To Home</Text>
-                                </TouchableOpacity>
-                            </View>
-                        ) : (
-                            <View style={styles.weatherInfo}>
-                                <Text style={styles.city}>Weather Wizard</Text>
-                                <Text style={styles.date}>{dateBuilder(new Date())}</Text>
-                            </View>
-                        )
-                        }
-
-
-
-                        {(weatherData.cod === '404') ? (
-                            <Text style={{ marginTop: 50, color: '#fff', fontSize: 20, textAlign: 'center', marginRight: 20, marginLeft: 20 }}>No city found. Maybe try just putting the city name?</Text>
-                        ) : (<></>)}
-                        <TouchableOpacity style={styles.goToRecents} onPress={() => navigation.navigate('Recents')}>
-                            <Text style={styles.recentsText}>View Recent Searches</Text>
-                        </TouchableOpacity>
-                        <View style={styles.credit}>
-                            <Text style={styles.myName}>Developed by <Text style={styles.fullName}>Arpan Neupane</Text></Text>
+                        <View style={styles.weatherInfo}>
+                            <Text style={styles.city}>{weatherData.name}, {weatherData.sys.country}</Text>
+                            <Text style={styles.date}>{dateBuilder(new Date())}</Text>
+                            <TouchableOpacity style={styles.weatherBox} onPress={() => unit ? setUnit(false) : setUnit(true)}>
+                                {unit ? <Text style={styles.temp}>{Math.round(weatherData.main.temp)}ºF</Text> : <Text style={styles.temp}>{Math.round((weatherData.main.temp - 32) * 5 / 9)}ºC</Text>}
+                            </TouchableOpacity>
+                            {unit ? <Text style={styles.minMax}>Min: {Math.round(weatherData.main.temp_min)}ºF / Max: {Math.round(weatherData.main.temp_max)}ºF</Text> : <Text style={styles.minMax}>Min: {Math.round((weatherData.main.temp_min - 32) * 5 / 9)}ºC / Max: {Math.round((weatherData.main.temp_max - 32) * 5 / 9)}ºC</Text>}
+                            <Text style={styles.weather}>{weatherData.weather[0].main}</Text>
+                            <TouchableOpacity style={styles.goToHome} onPress={() => setWeatherData([{}])}>
+                                <Text style={styles.homeText}>Go To Home</Text>
+                            </TouchableOpacity>
                         </View>
-                    </ScrollView>
-                </View>
-            </View>
-        </ImageBackground >
+                    ) : (
+                        <View style={styles.weatherInfo}>
+                            <Text style={styles.city}>Weather Wizard</Text>
+                            <Text style={styles.date}>{dateBuilder(new Date())}</Text>
+                        </View>
+                    )
+                    }
+
+
+                    {(weatherData.cod === '404') ? (
+                        <Text style={{ marginTop: 50, color: '#fff', fontSize: 20, textAlign: 'center', marginRight: 20, marginLeft: 20 }}>No city found. Maybe try just putting the city name?</Text>
+                    ) : (<></>)}
+                    <TouchableOpacity style={styles.goToRecents} onPress={() => navigation.navigate('Recents')}>
+                        <Text style={styles.recentsText}>View Recent Searches</Text>
+                    </TouchableOpacity>
+                    <View style={styles.credit}>
+                        <Text style={styles.myName}>Developed by <Text style={styles.fullName}>Arpan Neupane</Text></Text>
+                    </View>
+                </ScrollView>
+            </ImageBackground >
+        </SafeAreaView>
+
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-
     main: {
-        marginTop: 110,
+        paddingTop: '10%',
         width: "100%",
-        flex: 1
+        flex: 1,
+        height: "100%"
     },
 
     cityInput: {
@@ -217,7 +214,7 @@ const styles = StyleSheet.create({
         marginRight: 'auto',
         marginLeft: 'auto',
         marginTop: 20,
-        marginBottom: 10,
+        marginBottom: 110,
         flex: 1,
         justifyContent: 'space-between',
         alignItems: 'center',
