@@ -10,9 +10,9 @@ const Stack = createStackNavigator();
 export default function App() {
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: true, headerTransparent: true }}>
-                <Stack.Screen name='Home' component={Weather} options={{ headerTintColor: "#fff" }} />
-                <Stack.Screen name='Recents' component={Recents} options={{ headerTintColor: "#fff" }} />
+            <Stack.Navigator initialRouteName="Home">
+                <Stack.Screen name='Home' component={Weather} />
+                <Stack.Screen name='Recents' component={Recents} />
             </Stack.Navigator >
         </NavigationContainer >
 
