@@ -9,6 +9,8 @@ import {
     Alert
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import SafeAreaView from 'react-native-safe-area-view';
 
 
 let json = require('./recents.json')
@@ -45,22 +47,22 @@ export default function Recents({ navigation }) {
 
 
     return (
-        <ImageBackground
-            source={require('../assets/warm-bg.jpg')}
-            style={{ width: '100%', height: '105%' }}
-        >
+        <SafeAreaView>
+            <StatusBar barStyle='light-content' />
+            <ImageBackground
+                source={require('../assets/warm-bg.jpg')}
+                style={{ width: '100%', height: '100%' }}
+            >
 
-            <View style={styles.main}>
-                {/* <Text style={styles.header}>Recents</Text> */}
-                <ScrollView
+                <ScrollView style={styles.main}
                     content={styles.scrollView}
                     refreshControl={
                         <RefreshControl
                             refresh={refreshing}
                             onRefresh={onRefresh}
                         />
-                    }
-                >
+                    }>
+
                     <View style={styles.recent}>
                         <Text style={styles.city}>Your recent searches will be here.</Text>
                     </View>
@@ -72,21 +74,17 @@ export default function Recents({ navigation }) {
                         </View>
                     ))}
                 </ScrollView>
-
-
-            </View>
-
-
-        </ImageBackground>
+            </ImageBackground >
+        </SafeAreaView>
     )
 
 }
 
 const styles = StyleSheet.create({
     main: {
-        marginTop: 120,
+        paddingTop: '10%',
         flex: 1,
-        width: '100%'
+        width: '100%',
     },
 
     recent: {
